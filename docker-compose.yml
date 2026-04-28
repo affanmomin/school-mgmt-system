@@ -1,0 +1,75 @@
+# One-command local stack: Postgres + backend + frontend.
+#
+# Usage:
+#   docker compose up --build         # boot everything
+#   docker compose down               # stop
+#   docker compose down -v            # stop and wipe the DB volume
+#
+# On first boot the postgres container imports seed_db/tables.sql and
+# seed_db/seed-db.sql automatically (Postgres image runs anything in
+# /docker-entrypoint-initdb.d/ alphabetically), so the schema and admin
+# user are ready out of the box.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: school-mgmt-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: school_mgmt
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./seed_db/tables.sql:/docker-entrypoint-initdb.d/01-tables.sql:ro
+      - ./seed_db/seed-db.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d school_mgmt"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: school-mgmt-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 5007
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/school_mgmt
+      # Dev secrets — replace before deploying anywhere real.
+      JWT_ACCESS_TOKEN_SECRET: dev-access-secret
+      JWT_REFRESH_TOKEN_SECRET: dev-refresh-secret
+      JWT_ACCESS_TOKEN_TIME_IN_MS: 900000
+      JWT_REFRESH_TOKEN_TIME_IN_MS: 28800000
+      CSRF_TOKEN_SECRET: dev-csrf-secret
+      CSRF_TOKEN_TIME_IN_MS: 950000
+      EMAIL_VERIFICATION_TOKEN_SECRET: dev-email-secret
+      EMAIL_VERIFICATION_TOKEN_TIME_IN_MS: 18000000
+      PASSWORD_SETUP_TOKEN_SECRET: dev-pwd-setup-secret
+      PASSWORD_SETUP_TOKEN_TIME_IN_MS: 300000
+      UI_URL: http://localhost:3000
+      API_URL: http://localhost:5007
+      COOKIE_DOMAIN: localhost
+      MAIL_FROM_USER: noreply@example.com
+      RESEND_API_KEY: re_dev_placeholder
+    ports:
+      - "5007:5007"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5007
+    container_name: school-mgmt-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres-data:
