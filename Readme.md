@@ -5,9 +5,6 @@ A comprehensive full-stack web application for managing school operations includ
 ---
 
 ## 📋 Submission Report
-
-This repository contains the completed skill-test work, plus additional fixes and a security finding uncovered during review. The git history is linear and uses [Conventional Commits](https://www.conventionalcommits.org) — each logical change is its own commit, and the subjects double as a high-level changelog. Run `git log --oneline` for the full list.
-
 | # | Document | What it covers |
 |---|---|---|
 | 1 | [`docs/01-readme-tasks.md`](./docs/01-readme-tasks.md) | The two challenges defined in the README's "Skill Test Problems" section: fix the Add Notice description bug (`fix(notice): bind description field …`) and implement the empty student CRUD controller (`feat(students): implement CRUD controller handlers`). |
