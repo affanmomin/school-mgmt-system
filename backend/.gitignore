@@ -1,0 +1,8 @@
+node_modules
+hashPwd.js
+package-lock.json
+
+# Environment — keep .env.example tracked, ignore the rest
+.env
+.env.local
+.env.*.local
