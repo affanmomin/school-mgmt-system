@@ -2,6 +2,25 @@
 
 A comprehensive full-stack web application for managing school operations including students, staff, classes, notices, and leave management. This project serves as a skill assessment platform for **Frontend**, **Backend**, and **Blockchain** developers.
 
+---
+
+## 📋 Submission Report
+
+This repository contains the completed skill-test work, plus additional fixes and a security finding uncovered during review. The git history is linear and uses [Conventional Commits](https://www.conventionalcommits.org) — each logical change is its own commit, and the subjects double as a high-level changelog. Run `git log --oneline` for the full list.
+
+| # | Document | What it covers |
+|---|---|---|
+| 1 | [`docs/01-readme-tasks.md`](./docs/01-readme-tasks.md) | The two challenges defined in the README's "Skill Test Problems" section: fix the Add Notice description bug (`fix(notice): bind description field …`) and implement the empty student CRUD controller (`feat(students): implement CRUD controller handlers`). |
+| 2 | [`docs/02-additional-fixes.md`](./docs/02-additional-fixes.md) | Independent defects found while implementing #1: cookies broken on local dev, no SSL for managed Postgres, recipient-list endpoint crashes on bad data, students router skipped access checks, dead-code cleanup, and tooling fixes (husky / prettier / `.gitignore`). Also documents what was *deliberately not* changed and why. |
+| 3 | [`docs/03-backdoor-vulnerability.md`](./docs/03-backdoor-vulnerability.md) | The backend was fetching and executing arbitrary JavaScript from a third-party URL on every boot via `syncConfigHandler` + `executeHandler`. Full analysis, what could be proven from the imports, observed runtime behaviour (masking real DB errors), and the four-file removal in `security: remove boot-time remote code loader`. |
+
+### Suggested reading order
+1. **`01-readme-tasks.md`** — the answer to the assignment as posed.
+2. **`02-additional-fixes.md`** — the "would-have-blocked-end-to-end-testing" fixes plus design issues left untouched on purpose.
+3. **`03-backdoor-vulnerability.md`** — the most consequential finding. Explains an active interference with development that anyone running the original code locally would have experienced (database errors silently rewritten to `"An error occurred while processing your request"`).
+
+---
+
 ## 🏗️ Project Architecture
 
 ```
