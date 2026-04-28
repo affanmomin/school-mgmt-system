@@ -147,9 +147,18 @@ const getNoticeRecipientList = async () => {
         const { rows } = await db.query(selectRoleQuery, [role_id]);
         const recipient = { id, roleId: role_id, name: rows[0].name };
 
-        const { rows: dependentRows } = primary_dependent_select
-          ? await db.query(primary_dependent_select)
-          : await Promise.resolve({ rows: [] });
+        let dependentRows = [];
+        if (primary_dependent_select) {
+          try {
+            const { rows } = await db.query(primary_dependent_select);
+            dependentRows = rows;
+          } catch (err) {
+            console.error(
+              `notice_recipient_types row ${id}: invalid primary_dependent_select`,
+              err.message
+            );
+          }
+        }
 
         recipient.primaryDependents = {
           name: primary_dependent_name,
